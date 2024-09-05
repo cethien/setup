@@ -2,7 +2,7 @@
 
 param (
     [Parameter(HelpMessage = "profiles")]
-    [string[]]$Profiles
+    [string[]]$Profiles    
 )
 
 # check if config.json exists
@@ -27,7 +27,7 @@ $config.actions | ForEach-Object {
     }
 
     if ($_.script -ne $null) {
-        Invoke-Expression $_.script
+        $_.script | ForEach-Object { Invoke-Expression $_ }
     }
 
     if ($_.winget_packages -ne $null) {
@@ -42,12 +42,10 @@ $config.actions | ForEach-Object {
     }
 
     if ($_.pwsh_modules -ne $null) {
-        $_.pwsh_modules | ForEach-Object {
-            Install-Module $_
-        }
+        $_.pwsh_modules | ForEach-Object { Install-Module $_ }
     }
 
     if ($_.post_install_script -ne $null) {
-        Invoke-Expression $_.post_install_script
+         $_.post_install_script | ForEach-Object { Invoke-Expression $_ }
     }
 }
