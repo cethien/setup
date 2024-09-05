@@ -23,11 +23,11 @@ $config = Get-Content "$HOME/.win-setup/config.json" | ConvertFrom-Json
 
 $config.actions | ForEach-Object {
     if ($_.prepare_script -ne $null) {
-        $_.prepare_script | ForEach-Object { Invoke-Expression $_ }
+        $_.prepare_script -Join "`n" | Invoke-Expression
     }
 
     if ($_.script -ne $null) {
-        $_.script | ForEach-Object { Invoke-Expression $_ }
+        $_.script -Join "`n" | Invoke-Expression
     }
 
     if ($_.winget_packages -ne $null) {
@@ -46,6 +46,6 @@ $config.actions | ForEach-Object {
     }
 
     if ($_.post_install_script -ne $null) {
-         $_.post_install_script | ForEach-Object { Invoke-Expression $_ }
+         $_.post_install_script -Join "`n" | Invoke-Expression
     }
 }
