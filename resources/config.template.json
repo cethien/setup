@@ -1,0 +1,8 @@
+{
+    "$schema": "https://raw.githubusercontent.com/cethien/setup/refs/heads/wsl/schemas/config.schema.json",
+    "username" : "jdoe",
+    "git": {
+        "username": "jdoe",
+        "email": "john.doe@example.com"
+    }   
+}
