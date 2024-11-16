@@ -1,27 +1,58 @@
 #Requires -Version 5.1
 
 param (
-    [Parameter(HelpMessage = "profiles")]
-    [string[]]$Profiles    
+    [Parameter(Position = 0, HelpMessage = "Profiles to run actions for. use 'all' to run all actions.")]
+    [string[]]$Profiles,
+
+    [Parameter(HelpMessage = "Show profiles in output.")]
+    [switch]$PrintProfiles = $false
 )
+
+# check if winget is installed
+if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+    Write-Error "winget not found. winget is required to run this script."
+    exit 1
+}
 
 # check if config.json exists
 $configFile = "$HOME/.win-setup/config.json"
 if (-not (Test-Path $configFile)) {
     # create configFile with property called "$schema" and echo "hello world" action
-    $config = @{
-        "`$schema" = "https://raw.githubusercontent.com/cethien/win-setup/main/config.schema.json"
-        actions    = @(
-            @{
-                script = "echo `"Hello World! please edit $HOME\.win-setup\config.json`""
-            }
-        )
+    $actions = @(
+        @{
+            script = @(
+                "echo `"Hi 👋! please edit me first! i'm at $HOME\.win-setup\config.json`""
+            )
+        }
+    )
+
+    @{
+        "`$schema" = "https://raw.githubusercontent.com/cethien/setup/refs/heads/win/schemas/config.schema.json"
+        actions    = $actions
     } | ConvertTo-Json -Depth 10 | Set-Content $configFile
 }
 
-$config = Get-Content "$HOME/.win-setup/config.json" | ConvertFrom-Json
+$actions = Get-Content "$HOME/.win-setup/config.json" | ConvertFrom-Json | Select-Object -Expand actions
 
-$config.actions | ForEach-Object {
+if ($PrintProfiles) {
+    $profiles = $actions | ForEach-Object { if ($_.profiles -ne $null) { $_.profiles } } | Sort-Object | Get-Unique
+    Write-Host "Profiles:"
+    $profiles | ForEach-Object { Write-Host " - $_" }
+    exit
+}
+
+# by default, run only actions with no profiles
+if ($Profiles.Count -eq 0) {
+    $actions = $actions | Where-Object { $_.profiles -eq $null }
+}
+elseif ($Profiles.Count -eq 1 -and $Profiles[0] -eq "all") {
+    $actions = $actions
+}
+else {
+    $actions = $actions | Where-Object { $_.profiles -eq $null -or $_.profiles -in $Profiles }
+}
+
+$actions | ForEach-Object {
     if ($_.prepare_script -ne $null) {
         $_.prepare_script -Join "`n" | Invoke-Expression
     }
@@ -46,6 +77,6 @@ $config.actions | ForEach-Object {
     }
 
     if ($_.post_install_script -ne $null) {
-         $_.post_install_script -Join "`n" | Invoke-Expression
+        $_.post_install_script -Join "`n" | Invoke-Expression
     }
 }
