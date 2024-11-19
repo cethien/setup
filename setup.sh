@@ -36,13 +36,17 @@ fi
 # if nixos, pull nixos repo and rebuild
 if [ "$LX_ENV" = "nixos" ]; then
     echo "setting up nixos"
+    NIXOS_SCRIPT='
     git clone https://github.com/cethien/nixos.git $HOME/nixos &&
         sudo nixos-rebuild switch --flake $HOME/nixos/#pc-cethien
+    '
+    nix-shell -p git --run "$NIXOS_SCRIPT"
 fi
 
 RUN_SCRIPT='
 git init -b lx &&
     git remote add origin https://github.com/cethien/dotfiles.git &&
+    git fetch origin lx &&
     git reset --hard origin/lx &&
     git pull --set-upstream origin lx &&
     curl https://raw.githubusercontent.com/cethien/setup/lx/resources/config.template.json >>$HOME/.config/home-manager/config.json &&
