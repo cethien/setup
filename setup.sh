@@ -30,9 +30,7 @@ if [ "$LX_ENV" = "any" ]; then
     curl -fsSL https://nixos.org/nix/install | bash /dev/stdin --no-daemon &&
         mkdir -p $HOME/.config/nix &&
         curl https://raw.githubusercontent.com/cethien/setup/lx/resources/nix.conf >>$HOME/.config/nix/nix.conf &&
-        mv "$HOME"/.bashrc "$HOME"/.bashrc_default &&
-        mv "$HOME"/.profile "$HOME"/.profile_default &&
-        . "$HOME"/.nix-profile/etc/profile.d/nix.sh
+        source "$HOME"/.nix-profile/etc/profile.d/nix.sh
 fi
 
 # if nixos, pull nixos repo and rebuild
@@ -49,7 +47,7 @@ git init -b lx &&
     git pull --set-upstream origin lx &&
     curl https://raw.githubusercontent.com/cethien/setup/lx/resources/config.template.json >>$HOME/.config/home-manager/config.json &&
     nano $HOME/.config/home-manager/config.json &&
-    home-manager switch
+    home-manager switch -b hm.bak
 '
 
 nix-shell -p git home-manager nano curl --run "$script"
