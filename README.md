@@ -2,7 +2,8 @@
 
 ## requirements
 
-- dotfiles repo
+- [dotfiles repo](https://github.com/cethien/dotfiles)
+- [nixos repo](https://github.com/cethien/nixos)
 - bash
 
 ## usage

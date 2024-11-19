@@ -35,6 +35,13 @@ if [ "$LX_ENV" = "any" ]; then
         . "$HOME"/.nix-profile/etc/profile.d/nix.sh
 fi
 
+# if nixos, pull nixos repo and rebuild
+if [ "$LX_ENV" = "nixos" ]; then
+    echo "setting up nixos"
+    git clone https://github.com/cethien/nixos.git $HOME/nixos &&
+        sudo nixos-rebuild switch --flake $HOME/nixos/#pc-cethien
+fi
+
 $script = '
 git init -b lx &&
     git remote add origin https://github.com/cethien/dotfiles.git &&
