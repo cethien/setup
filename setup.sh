@@ -40,7 +40,7 @@ if [ "$LX_ENV" = "nixos" ]; then
         sudo nixos-rebuild switch --flake $HOME/nixos/#pc-cethien
 fi
 
-$script = '
+RUN_SCRIPT='
 git init -b lx &&
     git remote add origin https://github.com/cethien/dotfiles.git &&
     git reset --hard origin/lx &&
@@ -50,7 +50,7 @@ git init -b lx &&
     home-manager switch -b hm.bak
 '
 
-nix-shell -p git home-manager nano curl --run "$script"
+nix-shell -p git home-manager nano curl --run "$RUN_SCRIPT"
 
 # for wsl,
 if [ "$LX_ENV" = "wsl" ]; then
