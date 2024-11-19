@@ -1,4 +1,4 @@
-# WSL setup script
+# Linux setup script
 
 ## requirements
 
