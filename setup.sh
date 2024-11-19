@@ -38,6 +38,7 @@ if [ "$LX_ENV" = "nixos" ]; then
     echo "setting up nixos"
     NIXOS_SCRIPT='
     git clone https://github.com/cethien/nixos.git $HOME/nixos &&
+        cat /etc/nixos/hardware-configuration.nix > $HOME/nixos/nixos/hardware-configuration.nix &&
         sudo nixos-rebuild switch --flake $HOME/nixos/#pc-cethien
     '
     nix-shell -p git --run "$NIXOS_SCRIPT"
