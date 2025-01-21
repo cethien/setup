@@ -2,8 +2,6 @@
 
 set -e
 
-DOTFILES_REPO=cethien/dotfiles
-
 if command -v apt >/dev/null 2>&1; then
     echo "installing nala"
     sudo apt update &&
@@ -21,7 +19,7 @@ fi
 
 echo "installing home-manager profile"
 source "$HOME/.nix-profile/etc/profile.d/nix.sh" &&
-    nix run nixpkgs#home-manager -- switch --flake github.com:"$DOTFILES_REPO#cethien@wsl" -b hm-bak-$(date +%Y%m%d-%H%M%S) --refresh
+    nix run nixpkgs#home-manager -- switch --flake github:cethien/dotfiles#cethien@wsl -b hm-bak-$(date +%Y%m%d-%H%M%S) --refresh
 
 if [ ! -z "$WSL_DISTRO_NAME" ]; then
     echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/"$USER" >/dev/null
