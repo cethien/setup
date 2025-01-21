@@ -1,9 +1,0 @@
-{
-    "$schema": "https://raw.githubusercontent.com/cethien/setup/lx/schemas/config.schema.json",
-    "home_profile": "linux",
-    "username": "jdoe",
-    "git": {
-        "username": "jdoe",
-        "email": "john.doe@example.com"
-    }
-}
