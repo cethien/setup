@@ -24,8 +24,8 @@ if [ ! -z "$WSL_DISTRO_NAME" ]; then
 fi
 
 echo "installing home-manager profile"
-. "$HOME/.nix-profile/etc/profile.d/nix.sh" &&
-    nix run nixpkgs#home-manager -- switch --flake github:cethien/dotfiles#"$CONFIGURATION" -b hm-bak-$(date +%Y%m%d-%H%M%S) --refresh
+# source $HOME/.profile &&
+nix run nixpkgs#home-manager -- switch --flake github:cethien/dotfiles#"$CONFIGURATION" -b hm-bak-$(date +%Y%m%d-%H%M%S) --refresh
 
 if [ ! -z "$WSL_DISTRO_NAME" ]; then
     echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/"$USER" >/dev/null
