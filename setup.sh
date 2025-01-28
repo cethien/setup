@@ -17,9 +17,15 @@ if ! command -v nixos-rebuild >/dev/null 2>&1; then
         curl https://raw.githubusercontent.com/cethien/setup/lx/resources/nix.conf >>"$HOME/.config/nix/nix.conf"
 fi
 
+CONFIGURATION="$(whoami)@$(hostname)"
+
+if [ ! -z "$WSL_DISTRO_NAME" ]; then
+    CONFIGURATION="$(whoami)@wsl"
+fi
+
 echo "installing home-manager profile"
 source "$HOME/.nix-profile/etc/profile.d/nix.sh" &&
-    nix run nixpkgs#home-manager -- switch --flake github:cethien/dotfiles#cethien@wsl -b hm-bak-$(date +%Y%m%d-%H%M%S) --refresh
+    nix run nixpkgs#home-manager -- switch --flake github:cethien/dotfiles#"$CONFIGURATION" -b hm-bak-$(date +%Y%m%d-%H%M%S) --refresh
 
 if [ ! -z "$WSL_DISTRO_NAME" ]; then
     echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/"$USER" >/dev/null
