@@ -1,10 +1,28 @@
-# Linux setup script
+# Setup scripts
+
+## Windows
 
 ## requirements
-- bash
+
+- powershell
+- configuration file `$HOME/.win-setup/config.json`
 
 ## usage
 
+```pwsh
+
+iwr "https://raw.githubusercontent.com/cethien/setup/setup.ps1" | iex
+
+```
+
+## Linux
+
+### Requirements
+
+- bash
+
+### Usage
+
 ```bash
- sh <(curl -fsSL -H 'Cache-Control: no-cache' "https://raw.githubusercontent.com/cethien/setup/lx/setup.sh")
+ sh <(curl -fsSL -H 'Cache-Control: no-cache' "https://raw.githubusercontent.com/cethien/setup/setup.sh")
 ```
