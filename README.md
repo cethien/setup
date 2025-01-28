@@ -11,7 +11,7 @@
 
 ```pwsh
 
-iwr "https://raw.githubusercontent.com/cethien/setup/setup.ps1" | iex
+iwr "https://raw.githubusercontent.com/cethien/setup/main/setup.ps1" | iex
 
 ```
 
@@ -24,5 +24,5 @@ iwr "https://raw.githubusercontent.com/cethien/setup/setup.ps1" | iex
 ### Usage
 
 ```bash
- sh <(curl -fsSL -H 'Cache-Control: no-cache' "https://raw.githubusercontent.com/cethien/setup/setup.sh")
+ sh <(curl -fsSL -H 'Cache-Control: no-cache' "https://raw.githubusercontent.com/cethien/setup/main/setup.sh")
 ```
