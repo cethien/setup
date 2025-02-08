@@ -14,7 +14,7 @@ param (
 # check if winget is installed
 if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
     Write-Error "winget not found. winget is required to run this script."
-    exit 1
+    return
 }
 
 # Load config JSON from file or URL
@@ -28,20 +28,20 @@ if ($ConfigFile) {
             $config = Invoke-RestMethod -Uri $ConfigFile
         } catch {
             Write-Error "Failed to fetch config file from $ConfigFile"
-            exit 1
+            return
         }
     } elseif (Test-Path $ConfigFile) {
         # If it's a local file path, read the config from the file
         $config = Get-Content $ConfigFile | ConvertFrom-Json
     } else {
         Write-Error "Config file not found at $ConfigFile"
-        exit 1
+       return
     }
 }
 
 if (-not $config) {
     Write-Error "Config file could not be loaded."
-    exit 1
+    return
 }
 
 $actions = $config.actions
@@ -50,7 +50,7 @@ if ($PrintProfiles) {
     $profiles = $actions | Where-Object { $_.profiles } | ForEach-Object { $_.profiles } | Sort-Object -Unique
     Write-Host "Profiles:"
     $profiles | ForEach-Object { Write-Host " - $_" }
-    exit
+    return
 }
 
 # Filter actions based on profiles
