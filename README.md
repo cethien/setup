@@ -5,13 +5,13 @@
 ## requirements
 
 - powershell
-- configuration file `$HOME/.win-setup/config.json`
+- a config json
 
 ## usage
 
 ```pwsh
 
-iwr "https://raw.githubusercontent.com/cethien/setup/main/setup.ps1" | iex
+iwr "https://raw.githubusercontent.com/cethien/setup/main/setup.ps1" | iex  -Command "-ConfigFile https://raw.githubusercontent.com/cethien/setup/main/win.json'"
 
 ```
 

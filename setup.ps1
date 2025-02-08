@@ -1,11 +1,14 @@
 #Requires -Version 5.1
 
 param (
-    [Parameter(Position = 0, HelpMessage = "Profiles to run actions for. use 'all' to run all actions.")]
+    [Parameter(Position = 0, HelpMessage = "Profiles to run actions for. Use 'all' to run all actions.")]
     [string[]]$Profiles,
 
     [Parameter(HelpMessage = "Show profiles in output.")]
-    [switch]$PrintProfiles = $false
+    [switch]$PrintProfiles = $false,
+
+    [Parameter(HelpMessage = "Path to a config JSON")]
+    [string]$ConfigFile
 )
 
 # check if winget is installed
@@ -14,69 +17,91 @@ if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
-# check if config.json exists
-$configFile = "$HOME/.win-setup/config.json"
-if (-not (Test-Path $configFile)) {
-    # create configFile with property called "$schema" and echo "hello world" action
-    $actions = @(
-        @{
-            script = @(
-                "echo `"Hi 👋! please edit me first! i'm at $HOME\.win-setup\config.json`""
-            )
-        }
-    )
+# Load config JSON from file or URL
+$config = $null
 
-    @{
-        "`$schema" = "https://raw.githubusercontent.com/cethien/setup/refs/heads/win/schemas/config.schema.json"
-        actions    = $actions
-    } | ConvertTo-Json -Depth 10 | Set-Content $configFile
+# Check if ConfigFile is a valid URL or a local file path
+if ($ConfigFile) {
+    if ($ConfigFile -match '^https?://') {
+        # If it's a URL, fetch the config from the URL
+        try {
+            $config = Invoke-RestMethod -Uri $ConfigFile
+        } catch {
+            Write-Error "Failed to fetch config file from $ConfigFile"
+            exit 1
+        }
+    } elseif (Test-Path $ConfigFile) {
+        # If it's a local file path, read the config from the file
+        $config = Get-Content $ConfigFile | ConvertFrom-Json
+    } else {
+        Write-Error "Config file not found at $ConfigFile"
+        exit 1
+    }
 }
 
-$actions = Get-Content "$HOME/.win-setup/config.json" | ConvertFrom-Json | Select-Object -Expand actions
+if (-not $config) {
+    Write-Error "Config file could not be loaded."
+    exit 1
+}
+
+$actions = $config.actions
 
 if ($PrintProfiles) {
-    $profiles = $actions | ForEach-Object { if ($_.profiles -ne $null) { $_.profiles } } | Sort-Object | Get-Unique
+    $profiles = $actions | Where-Object { $_.profiles } | ForEach-Object { $_.profiles } | Sort-Object -Unique
     Write-Host "Profiles:"
     $profiles | ForEach-Object { Write-Host " - $_" }
     exit
 }
 
-# by default, run only actions with no profiles
+# Filter actions based on profiles
 if ($Profiles.Count -eq 0) {
-    $actions = $actions | Where-Object { $_.profiles -eq $null }
+    $actions = $actions | Where-Object { -not $_.profiles }
 }
-elseif ($Profiles.Count -eq 1 -and $Profiles[0] -eq "all") {
-    $actions = $actions
-}
-else {
-    $actions = $actions | Where-Object { $_.profiles -eq $null -or $_.profiles -in $Profiles }
+elseif ($Profiles[0] -eq "all") {
+    # Do not filter if "all" is passed
+} else {
+    $actions = $actions | Where-Object { $_.profiles -in $Profiles -or -not $_.profiles }
 }
 
-$actions | ForEach-Object {
-    if ($_.prepare_script -ne $null) {
-        $_.prepare_script -Join "`n" | Invoke-Expression
+# Execute actions
+foreach ($action in $actions) {
+    # Prepare script
+    if ($action.prepare_script) {
+        Write-Host "  Running prepare script..."
+        $action.prepare_script -join "`n" | Invoke-Expression 
     }
 
-    if ($_.script -ne $null) {
-        $_.script -Join "`n" | Invoke-Expression
+    # Main script
+    if ($action.script) { 
+        Write-Host "  Running main script..."
+        $action.script -join "`n" | Invoke-Expression 
     }
 
-    if ($_.winget_packages -ne $null) {
-        $_.winget_packages | ForEach-Object {
-            $cmd = "winget install --accept-source-agreements --accept-package-agreements --source winget --Id $($_.id) $($_.install_flags -join " ")"
+    # Install winget packages
+    if ($action.winget_packages) {
+        foreach ($pkg in $action.winget_packages) {
+            Write-Host "  Installing winget package: $($pkg.id)"
+            $cmd = "winget install --accept-source-agreements --accept-package-agreements --source winget --Id $($pkg.id) $($pkg.install_flags -join ' ')"
             $cmd | Invoke-Expression
 
-            if ($_.exclude_from_updatefile -ne $true) {
-                Add-Content $env:USERPROFILE/.wingetupdate "$($_.id)`n"
+            if ($pkg.exclude_from_updatefile -ne $true) {
+                Write-Host "    Adding $($pkg.id) to winget update file."
+                Add-Content "$env:USERPROFILE\.wingetupdate" "$($pkg.id)`n"
             }
         }
     }
 
-    if ($_.pwsh_modules -ne $null) {
-        $_.pwsh_modules | ForEach-Object { Install-Module $_ }
+    # Install PowerShell modules
+    if ($action.pwsh_modules) {
+        foreach ($module in $action.pwsh_modules) {
+            Write-Host "  Installing PowerShell module: $module"
+            Install-Module $module -Force -Scope CurrentUser
+        }
     }
 
-    if ($_.post_install_script -ne $null) {
-        $_.post_install_script -Join "`n" | Invoke-Expression
+    # Post-install script
+    if ($action.post_install_script) {
+        Write-Host "  Running post-install script..."
+        $action.post_install_script -join "`n" | Invoke-Expression 
     }
 }

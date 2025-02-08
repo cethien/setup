@@ -1,0 +1,118 @@
+{
+	"$schema": "https://raw.githubusercontent.com/cethien/setup/refs/heads/main/schemas/config.schema.json",
+	"actions": [
+		{
+			"script": [
+				"Remove-Item alias:curl"
+			],
+			"winget_packages": [
+				{
+					"id": "Microsoft.PowerToys"
+				},
+				{
+					"id": "Mozilla.Firefox",
+					"exclude_from_updatefile": true
+				}
+			]
+		},
+		{
+			"winget_packages": [
+                {
+                    "id": "Microsoft.PowerShell"
+                },
+				{
+					"id": "Git.Git",
+					"install_flags": [
+						"--interactive"
+					]
+				},
+				{
+					"id": "GeekUninstaller.GeekUninstaller"
+				},
+				{
+					"id": "AntibodySoftware.WizTree"
+				},
+				{
+					"id": "M2Team.NanaZip"
+				},
+				{
+					"id": "Neovim.Neovim"
+				},
+				{
+					"id": "Microsoft.VisualStudioCode",
+					"install_flags": [
+						"--interactive"
+					]
+				},
+				{
+					"id": "dotPDN.PaintDotNet"
+				}
+			],
+			"pwsh_modules": [
+				"posh-git"
+			]
+		},
+		{
+			"profiles": [
+				"custom"
+			],
+			"winget_packages": [
+				{
+					"id": "chrisant996.Clink"
+				},
+				{
+					"id": "JanDeDobbeleer.OhMyPosh"
+				},
+				{
+					"id": "JanDeDobbeleer.Aliae"
+				}
+			],
+			"post_install_script": [
+				"oh-my-posh font install CodeNewRoman",
+				"oh-my-posh font install FiraCode"
+			]
+		},
+		{
+			"profiles": [
+				"home"
+			],
+			"winget_packages": [
+				{
+					"id": "Spotify.Spotify",
+					"exclude_from_updatefile": true
+				},
+				{
+					"id": "Discord.Discord",
+					"exclude_from_updatefile": true
+				}
+			]
+		},
+		{
+			"profiles": [
+				"home"
+			],
+			"winget_packages": [
+				{
+					"id": "Logitech.GHUB"
+				},
+				{
+					"id": "Elgato.StreamDeck"
+				},
+				{
+					"id": "Elgato.WaveLink"
+				}
+			]
+		},
+		{
+			"profiles": [
+				"gaming"
+			],
+			"winget_packages": [
+				{
+					"id": "Valve.Steam",
+					"exclude_from_updatefile": true
+				}
+			]
+		}
+	]
+}
