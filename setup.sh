@@ -24,7 +24,7 @@ if [ ! -z "$WSL_DISTRO_NAME" ]; then
 fi
 
 echo "installing home-manager profile"
-source $HOME/.nix-profile/etc/profile.d/nix.sh
+. $HOME/.nix-profile/etc/profile.d/nix.sh
 nix run nixpkgs#home-manager -- switch --flake github:cethien/dotfiles#"$CONFIGURATION" -b hm-bak-$(date +%Y%m%d-%H%M%S) --refresh
 
 if [ ! -z "$WSL_DISTRO_NAME" ]; then
