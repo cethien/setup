@@ -10,7 +10,7 @@
 					"id": "Microsoft.PowerToys"
 				},
 				{
-					"id": "Mozilla.Firefox",
+					"id": "Zen-Team.Zen-Browser",
 					"exclude_from_updatefile": true
 				}
 			]
